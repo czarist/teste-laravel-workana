@@ -16,16 +16,21 @@
             var cep = $(this).val().replace(/\D/g, ''); // Remove qualquer caractere não numérico
             if (cep.length === 8) {
                 $.ajax({
-                    url: `https://viacep.com.br/ws/${cep}/json/`,
-                    method: 'GET',
+                    url: `/api/validate-cep`,
+                    method: 'POST',
+                    data: {
+                        cep: cep
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function(data) {
-                        if (!("erro" in data)) {
+                        if (data && !data.erro) {
                             $('#street').val(data.logradouro);
                             $('#city').val(data.localidade);
                             $('#state').val(data.uf);
                             $('#country').val('Brazil');
                             $('#countryHidden').val('Brazil');
-
                         } else {
                             alert('CEP not found.');
                         }
@@ -44,7 +49,7 @@
             const formData = $(this).serialize();
 
             $.ajax({
-                url: 'api/register',
+                url: '/api/register',
                 type: 'POST',
                 data: formData,
                 headers: {

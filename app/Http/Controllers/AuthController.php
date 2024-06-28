@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CepService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,10 +10,12 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     protected $userService;
+    protected $cepService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, CepService $cepService)
     {
         $this->userService = $userService;
+        $this->cepService = $cepService;
     }
 
     public function showRegistrationForm()
@@ -28,6 +31,13 @@ class AuthController extends Controller
         Auth::login($user);
 
         return response()->json(['message' => 'User registered successfully'], 201);
+    }
+
+    public function validateCep(Request $request)
+    {
+        $cep = $request->input('cep');
+        $cepData = $this->cepService->getCepData($cep);
+        return response()->json($cepData);
     }
 
     public function showLoginForm()

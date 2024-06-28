@@ -14,7 +14,6 @@
                 },
                 success: function(response) {
                     alert(response.message);
-                    console.log(response);
                     window.location.href = '/password/reset/' + response.token + '?email=' +
                         encodeURIComponent(email);
                 },
