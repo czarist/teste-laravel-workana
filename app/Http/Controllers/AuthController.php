@@ -23,7 +23,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $this->userService->validateRegistrationData($request->all())->validate();
-        $user = $this->userService->createUser($request->all());
+        $user = $this->userService->createUserWithAddress($request->all());
 
         Auth::login($user);
 
@@ -51,13 +51,6 @@ class AuthController extends Controller
     public function showLinkRequestForm()
     {
         return view('auth.passwords.email');
-    }
-
-    public function validateCep(Request $request)
-    {
-        $cep = $request->cep;
-        $address = file_get_contents("https://viacep.com.br/ws/{$cep}/json/");
-        return response()->json(json_decode($address));
     }
 
     public function logout(Request $request)

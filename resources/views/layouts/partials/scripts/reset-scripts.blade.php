@@ -2,12 +2,20 @@
     $(document).ready(function() {
         $('#resetPasswordForm').on('submit', function(event) {
             event.preventDefault();
-            const formData = $(this).serialize();
+            const formData = $(this).serializeArray();
+            let token = formData.find(item => item.name === 'token').value;
+            let email = formData.find(item => item.name === 'email').value;
+            let password = formData.find(item => item.name === 'password').value;
+            let password_confirmation = formData.find(item => item.name === 'password_confirmation')
+                .value;
 
             $.ajax({
-                url: '/api/password/reset',
+                url: `/api/password/reset/${token}/${email}`,
                 type: 'POST',
-                data: formData,
+                data: {
+                    password: password,
+                    password_confirmation: password_confirmation
+                },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },

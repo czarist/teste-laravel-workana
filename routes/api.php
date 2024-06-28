@@ -20,6 +20,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/password/email', [ResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/validate-cep', [AuthController::class, 'validateCep'])->name('validate-cep');
+Route::post('/password/reset/{token}/{email}', [ResetPasswordController::class, 'resetEmailPassword'])->name('password.reset');
 
 // Rotas de API protegidas
 Route::middleware(['auth:sanctum'])->group(function () {

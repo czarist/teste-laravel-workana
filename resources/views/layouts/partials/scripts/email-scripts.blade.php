@@ -2,19 +2,21 @@
     $(document).ready(function() {
         $('#resetForm').on('submit', function(event) {
             event.preventDefault();
-            const formData = $(this).serialize();
+            const formData = $(this).serializeArray();
+            let email = formData.find(item => item.name === 'email').value;
 
             $.ajax({
                 url: '/api/password/email',
                 type: 'POST',
-                data: formData,
+                data: $(this).serialize(),
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
                     alert(response.message);
                     console.log(response);
-                    window.location.href = '/password/reset/' + response.token;
+                    window.location.href = '/password/reset/' + response.token + '?email=' +
+                        encodeURIComponent(email);
                 },
                 error: function(xhr) {
                     let errorMessage = 'An error occurred. Please try again.';

@@ -2,71 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Services\PasswordResetService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class ResetPasswordController extends Controller
 {
+    protected $passwordResetService;
+
+    public function __construct(PasswordResetService $passwordResetService)
+    {
+        $this->passwordResetService = $passwordResetService;
+    }
+
     public function sendResetLinkEmail(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found.'], 404);
-        }
-
-        $token = Str::random(60);
-
-        DB::table('password_resets')->updateOrInsert(
-            ['email' => $request->email],
-            [
-                'email' => $request->email,
-                'token' => Hash::make($token),
-                'created_at' => now(),
-            ]
-        );
-
-        return response()->json(['message' => 'Password reset token generated.', 'token' => $token], 200);
+        return $this->passwordResetService->sendResetLinkEmail($request->email);
     }
 
-    public function showResetForm($token)
+    public function showResetForm($token, Request $request)
     {
-        return view('auth.passwords.reset', ['token' => $token]);
+        return view('auth.passwords.reset', ['token' => $token, 'email' => $request->query('email')]);
     }
 
-    public function reset(Request $request)
+    public function resetEmailPassword(Request $request, $token, $email)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
-            'token' => 'required',
+        $response = $this->passwordResetService->resetPassword([
+            'email' => $email,
+            'password' => $request->password,
+            'password_confirmation' => $request->password_confirmation,
+            'token' => $token,
         ]);
 
-        $passwordReset = DB::table('password_resets')
-            ->where('email', $request->email)
-            ->first();
-
-        if (!$passwordReset || !Hash::check($request->token, $passwordReset->token)) {
-            return response()->json(['message' => 'Invalid token.'], 400);
-        }
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found.'], 404);
-        }
-
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        // Remover o token de redefinição de senha
-        DB::table('password_resets')->where('email', $request->email)->delete();
-
-        return response()->json(['message' => 'Password has been reset.'], 200);
+        return response()->json(['message' => $response['message']], $response['status']);
     }
+
 }
