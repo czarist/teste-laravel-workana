@@ -14,6 +14,9 @@
     4. Go to project root folder.Open git bash or terminal and run composer install       
     5. Run php artisan key:generate in the terminal  
     6. Create a database in localhost named teste_laravel
-    7. Run php artisan serve 
+    7. Run php artisan migrate
+    8. Run php artisan serve 
+    9. Access http://localhost:8000
+
   
     
