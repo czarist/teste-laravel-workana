@@ -2,46 +2,64 @@
 
 namespace App\Services;
 
-use App\Models\Address;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Repositories\UserRepository;
 
 class UserService
 {
-    public function validateRegistrationData(array $data)
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
     {
-        return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'cep' => 'required|string|max:9', // Considerando o formato "00000-000"
-            'street' => 'required|string|max:255',
-            'number' => 'required|string|max:10',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:2',
-            'country' => 'required|string|max:255',
-        ]);
+        $this->userRepository = $userRepository;
     }
 
-    public function createUserWithAddress(array $data)
+    public function getUserWithAddress($id)
     {
-        $user = User::create([
+        return $this->userRepository->findUserWithAddress($id);
+    }
+
+    public function updateUser($id, array $data)
+    {
+        $user = $this->userRepository->findUserWithAddress($id);
+
+        if (!$user) {
+            return ['status' => 404, 'message' => 'User not found'];
+        }
+
+        $this->userRepository->updateUser($id, [
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
         ]);
 
-        Address::create([
-            'cep' => $data['cep'],
-            'street' => $data['street'],
-            'number' => $data['number'],
-            'city' => $data['city'],
-            'state' => $data['state'],
-            'country' => $data['country'],
-            'user_id' => $user->id,
-        ]);
+        if ($user->address) {
+            $user->address->update([
+                'street' => $data['street'],
+                'number' => $data['number'],
+                'city' => $data['city'],
+                'state' => $data['state'],
+                'country' => $data['country'],
+            ]);
+        } else {
+            $user->address()->create([
+                'street' => $data['street'],
+                'number' => $data['number'],
+                'city' => $data['city'],
+                'state' => $data['state'],
+                'country' => $data['country'],
+            ]);
+        }
 
-        return $user;
+        return ['status' => 200, 'message' => 'User updated successfully'];
+    }
+
+    public function deleteUser($id)
+    {
+        $user = $this->userRepository->deleteUser($id);
+
+        if (!$user) {
+            return ['status' => 404, 'message' => 'User not found'];
+        }
+
+        return ['status' => 200, 'message' => 'User deleted successfully'];
     }
 }
