@@ -101,19 +101,29 @@ class PasswordResetService
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Validation error.', 'errors' => $validator->errors()], 422);
+            return [
+                'status' => 422,
+                'message' => 'Validation error.',
+                'errors' => $validator->errors(),
+            ];
         }
 
         $passwordReset = $this->passwordResetRepository->findByEmail($data['email']);
 
         if (!$passwordReset || !Hash::check($data['token'], $passwordReset->token)) {
-            return response()->json(['message' => 'Invalid token.'], 400);
+            return [
+                'status' => 400,
+                'message' => 'Invalid token.',
+            ];
         }
 
         $user = User::where('email', $data['email'])->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found.'], 404);
+            return [
+                'status' => 404,
+                'message' => 'User not found.',
+            ];
         }
 
         $user->password = Hash::make($data['password']);
@@ -121,6 +131,10 @@ class PasswordResetService
 
         $this->passwordResetRepository->deleteByEmail($data['email']);
 
-        return response()->json(['message' => 'Password has been reset.'], 200);
+        return [
+            'status' => 200,
+            'message' => 'Password reseted.',
+        ];
     }
+
 }
