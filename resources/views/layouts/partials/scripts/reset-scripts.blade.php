@@ -4,11 +4,11 @@
             event.preventDefault();
             const formData = $(this).serialize();
             $.ajax({
-                url: '/password/email',
+                url: '/api/password/email',
                 type: 'POST',
                 data: formData,
                 success: function(data) {
-                    // Handle success
+                    alert('Password reset link sent!');
                 },
                 error: function(error) {
                     console.error('Error:', error);

@@ -4,11 +4,12 @@
             event.preventDefault();
             const formData = $(this).serialize();
             $.ajax({
-                url: '/login',
+                url: '/api/login',
                 type: 'POST',
                 data: formData,
                 success: function(data) {
-                    // Handle success
+                    alert('Login successful!');
+                    window.location.href = '/';
                 },
                 error: function(error) {
                     console.error('Error:', error);

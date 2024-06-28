@@ -24,9 +24,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $this->userService->validateRegistrationData($request->all())->validate();
-        $this->userService->createUser($request->all());
+        $user = $this->userService->createUser($request->all());
 
-        return redirect()->route('home');
+        // Automatically log the user in after registration
+        Auth::login($user);
+
+        return response()->json(['message' => 'User registered successfully'], 201);
     }
 
     public function showLoginForm()
@@ -41,12 +44,10 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('home');
+            return response()->json(['message' => 'Login successful'], 200);
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
     public function showLinkRequestForm()
@@ -62,8 +63,27 @@ class AuthController extends Controller
             $request->only('email')
         );
 
-        return $status === Password::RESET_LINK_SENT
-        ? back()->with(['status' => __($status)])
-        : back()->withErrors(['email' => __($status)]);
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json(['message' => __($status)], 200);
+        } else {
+            return response()->json(['message' => __($status)], 500);
+        }
+    }
+
+    public function validateCep(Request $request)
+    {
+        $cep = $request->cep;
+        $address = file_get_contents("https://viacep.com.br/ws/{$cep}/json/");
+        return response()->json(json_decode($address));
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Logout successful'], 200);
     }
 }

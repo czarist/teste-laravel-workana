@@ -3,16 +3,14 @@
         $('#cep').on('blur', function() {
             const cep = $(this).val();
             $.ajax({
-                url: '/validate-cep',
+                url: '/api/validate-cep',
                 type: 'POST',
                 data: {
                     cep: cep,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) {
-                    $('#address').val(
-                        `${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}`
-                        );
+                    $('#address').val(`${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}`);
                 },
                 error: function(error) {
                     console.error('Error:', error);
@@ -24,11 +22,12 @@
             event.preventDefault();
             const formData = $(this).serialize();
             $.ajax({
-                url: '/register',
+                url: '/api/register',
                 type: 'POST',
                 data: formData,
                 success: function(data) {
-                    // Handle success
+                    alert('Registration successful!');
+                    window.location.href = '/';
                 },
                 error: function(error) {
                     console.error('Error:', error);
