@@ -54,7 +54,7 @@
                 </div>
                 <div class="mb-2">
                     <label for="editCep" class="block text-sm font-medium text-gray-700">CEP</label>
-                    <input type="text" id="editCep" name="cep"
+                    <input type="text" id="editCep" name="cep" maxlength="9"
                         class="form-control mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                 </div>
                 <div class="mb-2">

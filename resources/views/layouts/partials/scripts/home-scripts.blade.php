@@ -1,4 +1,16 @@
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var cepInput = document.getElementById('editCep');
+
+        cepInput.addEventListener('input', function() {
+            var value = cepInput.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
+            if (value.length > 5) {
+                value = value.slice(0, 5) + '-' + value.slice(5, 8);
+            }
+            cepInput.value = value;
+        });
+    });
+
     $(document).ready(function() {
         $('.view-details-btn').on('click', function() {
             var userId = $(this).data('id');

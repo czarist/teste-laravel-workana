@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label for="cep" class="block text-sm font-medium text-gray-700">CEP</label>
-                <input type="text" id="cep" name="cep"
+                <input type="text" id="cep" name="cep" maxlength="9"
                     class="form-control mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
             </div>
             <div class="form-group">
