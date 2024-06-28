@@ -35,5 +35,4 @@ class ResetPasswordController extends Controller
 
         return response()->json(['message' => $response['message']], $response['status']);
     }
-
 }

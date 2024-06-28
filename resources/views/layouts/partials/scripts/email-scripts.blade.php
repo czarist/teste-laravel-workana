@@ -13,13 +13,11 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    alert(response.message);
-                    if (response.message == 'User not found.') {
-                        window.location.href = '/';
+                    if (response.message === 'User not found.') {
+                        alert('User not found.');
                     } else {
-                        window.location.href = '/password/reset/' + response.token +
-                            '?email=' +
-                            encodeURIComponent(email);
+                        alert('Password reset link sent to your email address.');
+                        window.location.href = '/';
                     }
                 },
                 error: function(xhr) {
