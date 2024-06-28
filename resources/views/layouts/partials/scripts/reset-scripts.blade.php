@@ -9,6 +9,12 @@
             let password_confirmation = formData.find(item => item.name === 'password_confirmation')
                 .value;
 
+            // Validar se as senhas são iguais
+            if (password !== password_confirmation) {
+                alert('Passwords do not match.');
+                return;
+            }
+
             $.ajax({
                 url: `/api/password/reset/${token}/${email}`,
                 type: 'POST',

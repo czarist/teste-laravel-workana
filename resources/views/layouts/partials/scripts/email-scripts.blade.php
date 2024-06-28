@@ -14,8 +14,13 @@
                 },
                 success: function(response) {
                     alert(response.message);
-                    window.location.href = '/password/reset/' + response.token + '?email=' +
-                        encodeURIComponent(email);
+                    if (response.message == 'User not found.') {
+                        window.location.href = '/';
+                    } else {
+                        window.location.href = '/password/reset/' + response.token +
+                            '?email=' +
+                            encodeURIComponent(email);
+                    }
                 },
                 error: function(xhr) {
                     let errorMessage = 'An error occurred. Please try again.';
