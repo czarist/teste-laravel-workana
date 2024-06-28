@@ -37,5 +37,9 @@ class UserRepository
 
         return $user;
     }
+    public function create(array $data)
+    {
+        return User::create($data);
+    }
 
 }

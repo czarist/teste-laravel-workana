@@ -3,10 +3,47 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserService
 {
     protected $userRepository;
+
+    public function validateRegistrationData(array $data)
+    {
+        return Validator::make($data, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'cep' => 'required|string|max:9',
+            'street' => 'required|string|max:255',
+            'number' => 'required|string|max:10',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+        ]);
+    }
+
+    public function createUserWithAddress(array $data)
+    {
+        $user = $this->userRepository->create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
+        $user->address()->create([
+            'cep' => $data['cep'],
+            'street' => $data['street'],
+            'number' => $data['number'],
+            'city' => $data['city'],
+            'state' => $data['state'],
+            'country' => $data['country'],
+        ]);
+
+        return $user;
+    }
 
     public function __construct(UserRepository $userRepository)
     {
