@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,14 +16,12 @@ use Illuminate\Support\Facades\Route;
  */
 
 // Rotas de API públicas
-Route::middleware('web')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::post('/validate-cep', [AuthController::class, 'validateCep'])->name('validate-cep');
-});
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/password/email', [ResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/validate-cep', [AuthController::class, 'validateCep'])->name('validate-cep');
 
 // Rotas de API protegidas
-Route::middleware(['auth:sanctum', 'web'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

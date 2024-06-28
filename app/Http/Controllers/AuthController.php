@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -26,7 +25,6 @@ class AuthController extends Controller
         $this->userService->validateRegistrationData($request->all())->validate();
         $user = $this->userService->createUser($request->all());
 
-        // Automatically log the user in after registration
         Auth::login($user);
 
         return response()->json(['message' => 'User registered successfully'], 201);
@@ -55,21 +53,6 @@ class AuthController extends Controller
         return view('auth.passwords.email');
     }
 
-    public function sendResetLinkEmail(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return response()->json(['message' => __($status)], 200);
-        } else {
-            return response()->json(['message' => __($status)], 500);
-        }
-    }
-
     public function validateCep(Request $request)
     {
         $cep = $request->cep;
@@ -79,8 +62,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

@@ -7,6 +7,9 @@
                 url: '/api/login',
                 type: 'POST',
                 data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function(data) {
                     alert('Login successful!');
                     window.location.href = '/';

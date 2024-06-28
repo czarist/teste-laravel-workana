@@ -9,6 +9,9 @@
                     cep: cep,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function(data) {
                     $('#address').val(`${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}`);
                 },

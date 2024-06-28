@@ -1,11 +1,11 @@
 <script>
     $(document).ready(function() {
-        $('#resetPasswordForm').on('submit', function(event) {
+        $('#resetForm').on('submit', function(event) {
             event.preventDefault();
             const formData = $(this).serialize();
 
             $.ajax({
-                url: '/api/password/reset',
+                url: '/api/password/email',
                 type: 'POST',
                 data: formData,
                 headers: {
@@ -13,7 +13,8 @@
                 },
                 success: function(response) {
                     alert(response.message);
-                    window.location.href = '/login';
+                    console.log(response);
+                    window.location.href = '/password/reset/' + response.token;
                 },
                 error: function(xhr) {
                     let errorMessage = 'An error occurred. Please try again.';
@@ -21,6 +22,7 @@
                         errorMessage = xhr.responseJSON.message;
                     }
                     alert(errorMessage);
+                    console.error('Error:', xhr);
                 }
             });
         });
